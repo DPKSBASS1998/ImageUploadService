@@ -1,0 +1,48 @@
+﻿@model List<ImageUploadService.ViewModels.ImageViewModel>
+
+<h1>Завантажені зображення</h1>
+
+<!-- Форма для завантаження зображення -->
+<form asp-action="UploadImage" method="post" enctype="multipart/form-data">
+    <div>
+        <label for="file">Виберіть зображення для завантаження:</label>
+        <input type="file" name="file" id="file" />
+    </div>
+    <button type="submit">Завантажити</button>
+</form>
+
+<!-- Виведення зображень -->
+@foreach (var image in Model)
+{
+    <div>
+        <h3>@image.Path</h3>
+
+        <!-- Виведення оригінального зображення -->
+        <img src="@image.Path" alt="original image" width="600">
+
+        <p>Там ескізи:</p>
+
+        <!-- Виведення ескізів різних розмірів -->
+        @foreach (var thumbnail in image.Thumbnails)
+        {
+            var thumbnailSize = thumbnail.Split('_').Last().Split('.').First(); // Отримуємо розмір (small, medium, large)
+
+            <div>
+                <p>@thumbnailSize:</p>
+
+                @if (thumbnailSize == "small")
+                {
+                    <img src="@thumbnail" alt="small thumbnail" width="100" height="100">
+                }
+                else if (thumbnailSize == "medium")
+                {
+                    <img src="@thumbnail" alt="medium thumbnail" width="300" height="300">
+                }
+                else if (thumbnailSize == "large")
+                {
+                    <img src="@thumbnail" alt="large thumbnail" width="600" height="600">
+                }
+            </div>
+        }
+    </div>
+}
