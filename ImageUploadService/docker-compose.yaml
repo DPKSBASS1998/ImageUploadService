@@ -1,13 +1,15 @@
-﻿services:
+﻿version: '3.8'
+
+services:
   web:
     build: .
     ports:
       - "5000:5000"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__ImageUploadDB=Server=sqlserver-container;Database=ImageUploadDB;User Id=SA;Password=YourStrong!Password;TrustServerCertificate=True;
+      - ConnectionStrings__ImageUploadDB=Host=my_postgres_container;Port=5432;Username=postgres;Password=30032005bvi;Database=imageuploaddb
     volumes:
-      - C:\Users\bvivl\source\repos\ImageUploadService\ImageUploadService\wwwroot\images:/app/wwwroot/images  
+      - ./wwwroot/images:/app/wwwroot/images
     networks:
       - app-network
 

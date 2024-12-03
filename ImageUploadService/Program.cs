@@ -4,8 +4,9 @@ using ImageUploadService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Зміна на PostgreSQL
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("ImageUploadDB")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("ImageUploadDB")));
 
 // Додаємо сервіс для генерації ескізів
 builder.Services.AddSingleton(provider =>
