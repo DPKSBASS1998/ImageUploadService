@@ -20,7 +20,7 @@
           - "5000:5000"
         environment:
           ASPNETCORE_ENVIRONMENT: Development
-          ConnectionStrings__ImageUploadDB: Server=sqlserver-container;Database=ImageUploadDB;User Id=SA;Password=YourStrong!Password;TrustServerCertificate=True;
+          ConnectionStrings__ImageUploadDB: Host=postgres-container;Port=5432;Username=postgres;Password=30032005bvi;Database=imageuploaddb;
           RabbitMQ__HostName: rabbitmq-container
           RabbitMQ__UserName: guest
           RabbitMQ__Password: guest

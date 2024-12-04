@@ -1,11 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
 namespace ImageUploadService.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class FixImageTableTypes : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -14,10 +15,10 @@ namespace ImageUploadService.Migrations
                 name: "images",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Path = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ThumbnailsJson = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Path = table.Column<string>(type: "text", nullable: false),
+                    ThumbnailsJson = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {

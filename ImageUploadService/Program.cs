@@ -18,7 +18,7 @@ internal class Program
 
         // Налаштування контексту бази даних
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(builder.Configuration.GetConnectionString("ImageUploadDB")));
+            options.UseNpgsql(builder.Configuration.GetConnectionString("ImageUploadDB")));
 
         // Додаємо конфігурацію для ThumbnailService
         builder.Services.Configure<ThumbnailServiceOptions>(builder.Configuration.GetSection("ThumbnailService"));

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Npgsql.EntityFrameworkCore.PostgreSQL;
 
 namespace ImageUploadService.Models
 {
@@ -12,8 +13,14 @@ namespace ImageUploadService.Models
         {
             base.OnModelCreating(modelBuilder);
 
-            // Вказуємо назву таблиці в базі даних
-            modelBuilder.Entity<Image>().ToTable("images");
+            modelBuilder.Entity<Image>()
+                .ToTable("images")
+                .Property(i => i.Path)
+                .HasColumnType("text");  // Використовуємо текстовий тип для PostgreSQL
+
+            modelBuilder.Entity<Image>()
+                .Property(i => i.ThumbnailsJson)
+                .HasColumnType("text");  // Використовуємо текстовий тип для PostgreSQL
         }
     }
 }
