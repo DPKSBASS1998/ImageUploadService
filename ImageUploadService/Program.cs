@@ -1,35 +1,47 @@
-using Microsoft.EntityFrameworkCore;
 using ImageUploadService.Models;
 using ImageUploadService.Services;
+using Microsoft.EntityFrameworkCore;
 
-var builder = WebApplication.CreateBuilder(args);
-
-// Зміна на PostgreSQL
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("ImageUploadDB")));
-
-// Додаємо сервіс для генерації ескізів
-builder.Services.AddSingleton(provider =>
+public class ThumbnailServiceOptions
 {
-    var config = builder.Configuration.GetSection("ThumbnailService");
-    string thumbnailsDirectory = config["ThumbnailsDirectory"];
-    return new ThumbnailService(thumbnailsDirectory);
-});
+    public string ThumbnailsDirectory { get; set; }
+    public string RabbitMqHostName { get; set; }
+    public string RabbitMqUserName { get; set; }
+    public string RabbitMqPassword { get; set; }
+}
 
-// Додаємо контролери для роботи з API
-builder.Services.AddControllersWithViews();
+internal class Program
+{
+    private static void Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
 
-var app = builder.Build();
+        // Налаштування контексту бази даних
+        builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseSqlServer(builder.Configuration.GetConnectionString("ImageUploadDB")));
 
-// Налаштовуємо порт для прослуховування
-app.Urls.Add("http://0.0.0.0:5000"); // Змінили порт на 5000
+        // Додаємо конфігурацію для ThumbnailService
+        builder.Services.Configure<ThumbnailServiceOptions>(builder.Configuration.GetSection("ThumbnailService"));
 
-// Налаштовуємо статичні файли
-app.UseStaticFiles(); // для доступу до файлів в wwwroot
+        // Додаємо сервіс для генерації ескізів
+        builder.Services.AddSingleton<ThumbnailService>();
 
-// Налаштування маршрутизації
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Image}/{action=Index}/{id?}");
+        // Додаємо контролери для роботи з API
+        builder.Services.AddControllersWithViews();
 
-app.Run();
+        var app = builder.Build();
+
+        // Налаштуємо порт для прослуховування
+        app.Urls.Add("http://0.0.0.0:5000");
+
+        // Налаштування статичних файлів
+        app.UseStaticFiles();
+
+        // Налаштування маршрутизації
+        app.MapControllerRoute(
+            name: "default",
+            pattern: "{controller=Image}/{action=Index}/{id?}");
+
+        app.Run();
+    }
+}
