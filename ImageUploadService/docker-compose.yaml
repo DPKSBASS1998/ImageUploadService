@@ -1,18 +1,53 @@
-﻿version: '3.8'
+﻿    version: '3.8'
 
-services:
-  web:
-    build: .
-    ports:
-      - "5000:5000"
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__ImageUploadDB=Host=my_postgres_container;Port=5432;Username=postgres;Password=30032005bvi;Database=imageuploaddb
-    volumes:
-      - ./wwwroot/images:/app/wwwroot/images
+    services:
+      rabbitmq:
+        image: rabbitmq:3-management
+        container_name: rabbitmq-container
+        ports:
+          - "5672:5672"   # Порт для клієнтських підключень
+          - "15672:15672" # Порт для веб-інтерфейсу RabbitMQ
+        environment:
+          RABBITMQ_DEFAULT_USER: guest
+          RABBITMQ_DEFAULT_PASS: guest
+        networks:
+          - app-network
+
+      web:
+        build: .
+        container_name: web-service
+        ports:
+          - "5000:5000"
+        environment:
+          ASPNETCORE_ENVIRONMENT: Development
+          ConnectionStrings__ImageUploadDB: Server=sqlserver-container;Database=ImageUploadDB;User Id=SA;Password=YourStrong!Password;TrustServerCertificate=True;
+          RabbitMQ__HostName: rabbitmq-container
+          RabbitMQ__UserName: guest
+          RabbitMQ__Password: guest
+        volumes:
+          - ./wwwroot:/app/wwwroot  
+        networks:
+          - app-network
+        depends_on:
+          - rabbitmq
+
+      postgres:
+        image: postgres:17
+        container_name: postgres-container
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: 30032005bvi
+          POSTGRES_DB: imageuploaddb
+        ports:
+          - "5432:5432"
+        volumes:
+          - postgres-data:/var/lib/postgresql/data
+        networks:
+          - app-network
+
     networks:
-      - app-network
+      app-network:
+        driver: bridge
 
-networks:
-  app-network:
-    driver: bridge
+    volumes:
+      postgres-data:
